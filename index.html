@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dr. Juan Gabriel González Díaz | Gestión Gineco-Obstétrica</title>
+<style>
+:root{--navy:#17324d;--teal:#167d83;--pale:#edf6f6;--ink:#22313f;--line:#d8e2e8;--bg:#f5f7fa}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(120deg,#17324d,#167d83);color:white;padding:22px 18px}
+header h1{margin:0;font-size:clamp(20px,4vw,28px)}header p{margin:6px 0 0;opacity:.92}
+main{max-width:1150px;margin:auto;padding:18px}.warning{background:#fff5db;border:1px solid #ead18b;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:14px}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}button,.tab{border:0;border-radius:9px;padding:10px 13px;background:#e2ecef;color:var(--navy);font-weight:650;cursor:pointer}
+button.primary,.tab.active{background:var(--teal);color:white}button.danger{background:#a83c43;color:white}button.small{padding:6px 9px;font-size:12px}
+.panel{background:white;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 2px 8px #17324d0a}
+h2{font-size:20px;margin:0 0 14px;color:var(--navy)}h3{font-size:16px;margin:18px 0 10px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+label{display:block;font-size:13px;font-weight:650;margin-bottom:5px;color:#3b4d5c}input,select,textarea{width:100%;padding:10px;border:1px solid #cbd8df;border-radius:8px;font:inherit;background:white;color:var(--ink)}textarea{min-height:78px;resize:vertical}
+.field{min-width:0}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.hidden{display:none!important}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}th{background:#f0f5f7;color:var(--navy)}
+.cardgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.metric{background:var(--pale);padding:14px;border-radius:11px}.metric b{font-size:24px;display:block;color:var(--teal)}
+.muted{color:#637585;font-size:13px}.status{padding:4px 8px;border-radius:99px;background:#e6f4e9;color:#23653a;font-size:12px}
+@media(max-width:750px){.grid,.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.cardgrid{grid-template-columns:repeat(2,minmax(0,1fr))}main{padding:12px}}
+@media(max-width:480px){.grid,.grid.two{grid-template-columns:1fr}header{padding:18px 14px}th,td{padding:8px 5px;font-size:12px}}
+</style></head>
+<body>
+<header><h1>Dr. Juan Gabriel González Díaz</h1><p>Ginecología y Obstetricia · Gestión de consultas y seguimiento</p></header>
+<main>
+<div class="warning"><strong>Prototipo de prueba:</strong> los datos se guardan solo en este navegador y dispositivo. No está conectado a la nube ni cuenta con una configuración de seguridad clínica verificada. Use únicamente datos ficticios; no introduzca información identificable de pacientes.</div>
+<div class="cardgrid" id="metrics"></div>
+<nav style="margin-top:16px">
+<button class="tab active" data-view="patients">Pacientes</button><button class="tab" data-view="consult">Nueva consulta</button><button class="tab" data-view="prenatal">Control prenatal</button><button class="tab" data-view="gyne">Historia ginecológica</button><button class="tab" data-view="obst">Historia obstétrica</button><button class="tab" data-view="agenda">Agenda y recordatorios</button><button class="tab" data-view="reports">Informes y respaldo</button>
+</nav>
+<section id="patients" class="view panel">
+<h2>Pacientes</h2>
+<div class="grid">
+<div class="field"><label>Buscar por nombre o código</label><input id="searchPatient" placeholder="Buscar…"></div>
+<div class="field"><label>Nombre completo (usar datos ficticios)</label><input id="pName" placeholder="Paciente de prueba"></div>
+<div class="field"><label>Fecha de nacimiento</label><input id="pDob" type="date"></div>
+<div class="field"><label>Teléfono (opcional, datos ficticios)</label><input id="pPhone" placeholder="Ej. 000000"></div>
+<div class="field"><label>Identificador interno</label><input id="pCode" placeholder="Ej. TEST-001"></div>
+<div class="field"><label>Observaciones generales</label><input id="pNotes" placeholder="Notas no identificables"></div>
+</div>
+<div class="actions"><button class="primary" id="addPatient">Guardar paciente de prueba</button><button id="clearPatient">Limpiar campos</button></div>
+<h3>Listado</h3><div style="overflow:auto"><table><thead><tr><th>Paciente</th><th>Código</th><th>Edad</th><th>Acciones</th></tr></thead><tbody id="patientRows"></tbody></table></div>
+</section>
+<section id="consult" class="view panel hidden">
+<h2>Nueva consulta / evolución</h2>
+<div class="grid">
+<div class="field"><label>Paciente</label><select id="cPatient"></select></div>
+<div class="field"><label>Fecha de consulta</label><input id="cDate" type="date"></div>
+<div class="field"><label>Tipo de consulta</label><select id="cType"><option>Ginecológica</option><option>Obstétrica / prenatal</option><option>Control puerperal</option><option>Planificación familiar</option><option>Otra</option></select></div>
+<div class="field"><label>Presión arterial</label><input id="cBp" placeholder="Ej. 120/80 mmHg"></div>
+<div class="field"><label>Peso (kg)</label><input id="cWeight" type="number" step=".1"></div>
+<div class="field"><label>Diagnóstico / impresión clínica</label><input id="cDx"></div>
+</div>
+<div class="grid two" style="margin-top:12px">
+<div class="field"><label>Motivo y hallazgos</label><textarea id="cReason"></textarea></div><div class="field"><label>Plan, tratamiento y evolución</label><textarea id="cPlan"></textarea></div>
+</div>
+<div class="grid" style="margin-top:12px"><div class="field"><label>Próximo control</label><input id="cNext" type="date"></div><div class="field"><label>Recordatorio</label><select id="cReminder"><option value="yes">Sí, mostrar en agenda</option><option value="no">No</option></select></div></div>
+<div class="actions"><button class="primary" id="saveConsult">Guardar consulta de prueba</button></div>
+<h3>Consultas recientes</h3><div style="overflow:auto"><table><thead><tr><th>Fecha</th><th>Paciente</th><th>Tipo</th><th>Diagnóstico</th><th>Próximo control</th></tr></thead><tbody id="consultRows"></tbody></table></div>
+</section>
+<section id="prenatal" class="view panel hidden">
+<h2>Control gestacional</h2>
+<p class="muted">La edad gestacional por FUM y por ecografía se muestran por separado. Confirme la datación obstétrica clínicamente; la herramienta no decide automáticamente qué fecha debe prevalecer.</p>
+<div class="grid">
+<div class="field"><label>Paciente</label><select id="prPatient"></select></div>
+<div class="field"><label>Fecha de evaluación</label><input id="prDate" type="date"></div>
+<div class="field"><label>Fecha de última menstruación (FUM)</label><input id="prFum" type="date"></div>
+<div class="field"><label>Fecha probable de parto por FUM</label><input id="prFppFum" readonly></div>
+<div class="field"><label>Edad gestacional por FUM</label><input id="prEgFum" readonly></div>
+<div class="field"><label>Fecha de ecografía</label><input id="prUsDate" type="date"></div>
+<div class="field"><label>Edad gestacional en ecografía (semanas)</label><input id="prUsWeeks" type="number" min="0" max="45"></div>
+<div class="field"><label>Edad gestacional en ecografía (días adicionales)</label><input id="prUsDays" type="number" min="0" max="6" value="0"></div>
+<div class="field"><label>FPP estimada por ecografía</label><input id="prFppUs" readonly></div>
+<div class="field"><label>Presión arterial</label><input id="prBp" placeholder="Ej. 110/70"></div>
+<div class="field"><label>Peso materno (kg)</label><input id="prWeight" type="number" step=".1"></div>
+<div class="field"><label>Altura uterina (cm)</label><input id="prAu" type="number" step=".1"></div>
+<div class="field"><label>Frecuencia cardíaca fetal (lpm)</label><input id="prFcf" type="number"></div>
+<div class="field"><label>Próximo control</label><input id="prNext" type="date"></div>
+<div class="field"><label>Embarazo de alto riesgo</label><select id="prRisk"><option value="no">No marcado</option><option value="yes">Sí — requiere valoración clínica</option></select></div>
+</div>
+<div class="grid two" style="margin-top:12px"><div class="field"><label>Ecografía / biometría / observaciones</label><textarea id="prUsNotes" placeholder="Ej. LCC cuando corresponda, informe resumido"></textarea></div><div class="field"><label>Laboratorios, evaluación y plan</label><textarea id="prPlan"></textarea></div></div>
+<div id="prenatalCalc" class="metric" style="margin-top:12px">Ingrese FUM o datos ecográficos para ver los cálculos.</div>
+<div class="actions"><button class="primary" id="savePrenatal">Guardar control de prueba</button></div>
+<h3>Controles gestacionales registrados</h3><div style="overflow:auto"><table><thead><tr><th>Fecha</th><th>Paciente</th><th>EG por FUM</th><th>FPP por FUM</th><th>FPP ecográfica</th><th>Próximo control</th><th>Riesgo</th></tr></thead><tbody id="prenatalRows"></tbody></table></div>
+</section>
+<section id="gyne" class="view panel hidden">
+<h2>Historia ginecológica</h2>
+<div class="grid">
+<div class="field"><label>Paciente</label><select id="gPatient"></select></div><div class="field"><label>Menarquia (años)</label><input id="gMenarche" type="number"></div><div class="field"><label>Patrón menstrual</label><input id="gCycle" placeholder="Regular/irregular, duración"></div>
+<div class="field"><label>FUM</label><input id="gFum" type="date"></div><div class="field"><label>Anticoncepción</label><input id="gContraception"></div><div class="field"><label>Citología / VPH</label><input id="gScreening"></div>
+<div class="field"><label>Antecedentes ginecológicos</label><textarea id="gHistory"></textarea></div><div class="field"><label>Examen y evaluación</label><textarea id="gExam"></textarea></div><div class="field"><label>Plan / seguimiento</label><textarea id="gPlan"></textarea></div>
+</div><div class="actions"><button class="primary" id="saveGyne">Guardar historia ginecológica de prueba</button></div><h3>Historias registradas</h3><div style="overflow:auto"><table><thead><tr><th>Paciente</th><th>Menarquia</th><th>Patrón menstrual</th><th>Anticoncepción</th><th>Seguimiento</th></tr></thead><tbody id="gyneRows"></tbody></table></div>
+</section>
+<section id="obst" class="view panel hidden">
+<h2>Historia obstétrica</h2><div class="grid">
+<div class="field"><label>Paciente</label><select id="oPatient"></select></div><div class="field"><label>Gestas</label><input id="oG" type="number" min="0"></div><div class="field"><label>Partos vaginales</label><input id="oP" type="number" min="0"></div><div class="field"><label>Cesáreas</label><input id="oC" type="number" min="0"></div><div class="field"><label>Abortos / pérdidas</label><input id="oA" type="number" min="0"></div><div class="field"><label>Hijos vivos</label><input id="oLiving" type="number" min="0"></div><div class="field"><label>Complicaciones previas</label><textarea id="oComp"></textarea></div><div class="field"><label>Antecedentes obstétricos relevantes</label><textarea id="oHistory"></textarea></div><div class="field"><label>Observaciones</label><textarea id="oNotes"></textarea></div>
+</div><div class="actions"><button class="primary" id="saveObst">Guardar historia obstétrica de prueba</button></div><h3>Historias registradas</h3><div style="overflow:auto"><table><thead><tr><th>Paciente</th><th>G</th><th>P</th><th>C</th><th>A</th><th>Hijos vivos</th></tr></thead><tbody id="obstRows"></tbody></table></div>
+</section>
+<section id="agenda" class="view panel hidden">
+<h2>Agenda y recordatorios</h2><p class="muted">La agenda muestra los próximos controles registrados en este navegador. No envía SMS, WhatsApp ni notificaciones fuera de esta página.</p>
+<div class="actions"><button id="notifyPermission">Activar notificaciones del navegador</button></div><p id="notifyStatus" class="muted"></p>
+<h3>Próximas citas</h3><div style="overflow:auto"><table><thead><tr><th>Fecha</th><th>Paciente</th><th>Origen</th><th>Detalle</th><th>Estado</th></tr></thead><tbody id="agendaRows"></tbody></table></div>
+</section>
+<section id="reports" class="view panel hidden">
+<h2>Informes y respaldo</h2><p>Exporte una copia JSON para respaldo o descargue un CSV de consultas. Los archivos exportados pueden contener información sensible si usted introduce datos reales; este prototipo debe usarse solo con datos ficticios.</p>
+<div class="actions"><button class="primary" id="exportJson">Exportar respaldo JSON</button><button id="exportCsv">Exportar consultas CSV</button><button class="danger" id="deleteAll">Borrar todos los datos locales</button></div>
+<h3>Estado del prototipo</h3><p id="storageInfo" class="muted"></p>
+</section>
+<footer class="muted" style="padding:12px 4px">Herramienta administrativa de prueba; no sustituye el juicio clínico ni un sistema de historia clínica validado.</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const today=()=>new Date().toISOString().slice(0,10);
+let db=JSON.parse(localStorage.getItem('jg_gineco_demo')||'{"patients":[],"consults":[],"prenatal":[],"gyne":[],"obst":[]}');
+function save(){localStorage.setItem('jg_gineco_demo',JSON.stringify(db));renderAll()}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function dateFmt(s){if(!s)return '—';let d=new Date(s+'T12:00:00');return isNaN(d)?'—':d.toLocaleDateString('es-PY')}
+function diffDays(a,b){return Math.floor((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/86400000)}
+function addDays(s,n){if(!s)return '';let d=new Date(s+'T12:00:00');d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)}
+function gestAge(fum,ref=today()){if(!fum||ref<fum)return '';let days=diffDays(fum,ref);return `${Math.floor(days/7)} sem ${days%7} d`}
+function fppFromUs(date,weeks,days){if(!date||weeks===''||weeks==null)return '';let remain=280-(Number(weeks)*7+Number(days||0));return addDays(date,remain)}
+function populateSelects(){['cPatient','prPatient','gPatient','oPatient'].forEach(id=>{let el=$(id),v=el.value;el.innerHTML='<option value="">Seleccione paciente</option>'+db.patients.map(p=>`<option value="${p.id}">${esc(p.name)} (${esc(p.code||'sin código')})</option>`).join('');if(db.patients.some(p=>p.id===v))el.value=v})}
+function renderAll(){populateSelects();$('metrics').innerHTML=`<div class="metric"><b>${db.patients.length}</b>Pacientes de prueba</div><div class="metric"><b>${db.consults.length}</b>Consultas</div><div class="metric"><b>${db.prenatal.length}</b>Controles prenatales</div><div class="metric"><b>${upcoming().length}</b>Próximas citas</div>`;
+let q=($('searchPatient')?.value||'').toLowerCase();$('patientRows').innerHTML=db.patients.filter(p=>(p.name+' '+p.code).toLowerCase().includes(q)).map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.code||'—')}</td><td>${p.dob?Math.max(0,Math.floor((Date.now()-new Date(p.dob).getTime())/31557600000)):'—'}</td><td><button class="small" onclick="selectPatient('${p.id}')">Usar</button> <button class="small danger" onclick="removePatient('${p.id}')">Eliminar</button></td></tr>`).join('')||'<tr><td colspan="4">No hay pacientes registrados.</td></tr>';
+$('consultRows').innerHTML=db.consults.slice().reverse().map(c=>`<tr><td>${dateFmt(c.date)}</td><td>${esc(nameOf(c.patient))}</td><td>${esc(c.type)}</td><td>${esc(c.dx||'—')}</td><td>${dateFmt(c.next)}</td></tr>`).join('')||'<tr><td colspan="5">Sin consultas.</td></tr>';
+$('prenatalRows').innerHTML=db.prenatal.slice().reverse().map(p=>`<tr><td>${dateFmt(p.date)}</td><td>${esc(nameOf(p.patient))}</td><td>${esc(p.egFum||'—')}</td><td>${dateFmt(p.fppFum)}</td><td>${dateFmt(p.fppUs)}</td><td>${dateFmt(p.next)}</td><td>${p.risk==='yes'?'Marcado':'No marcado'}</td></tr>`).join('')||'<tr><td colspan="7">Sin controles.</td></tr>';
+$('gyneRows').innerHTML=db.gyne.slice().reverse().map(g=>`<tr><td>${esc(nameOf(g.patient))}</td><td>${esc(g.menarche||'—')}</td><td>${esc(g.cycle||'—')}</td><td>${esc(g.contraception||'—')}</td><td>${esc(g.plan||'—')}</td></tr>`).join('')||'<tr><td colspan="5">Sin historias.</td></tr>';
+$('obstRows').innerHTML=db.obst.slice().reverse().map(o=>`<tr><td>${esc(nameOf(o.patient))}</td><td>${esc(o.g??'—')}</td><td>${esc(o.p??'—')}</td><td>${esc(o.c??'—')}</td><td>${esc(o.a??'—')}</td><td>${esc(o.living??'—')}</td></tr>`).join('')||'<tr><td colspan="6">Sin historias.</td></tr>';
+$('agendaRows').innerHTML=upcoming().map(a=>`<tr><td>${dateFmt(a.date)}</td><td>${esc(nameOf(a.patient))}</td><td>${esc(a.origin)}</td><td>${esc(a.detail||'Control')}</td><td><span class="status">${diffDays(today(),a.date)===0?'Hoy':`En ${diffDays(today(),a.date)} día(s)`}</span></td></tr>`).join('')||'<tr><td colspan="5">No hay citas futuras registradas.</td></tr>';
+$('storageInfo').textContent=`Almacenamiento local aproximado: ${new Blob([JSON.stringify(db)]).size.toLocaleString('es-PY')} bytes. Datos en este navegador únicamente; no sincroniza entre dispositivos.`
+}
+function nameOf(id){return db.patients.find(p=>p.id===id)?.name||'Paciente eliminada'}
+function upcoming(){let a=[];db.consults.filter(c=>c.reminder==='yes'&&c.next>=today()).forEach(c=>a.push({date:c.next,patient:c.patient,origin:'Consulta',detail:c.type}));db.prenatal.filter(p=>p.next>=today()).forEach(p=>a.push({date:p.next,patient:p.patient,origin:'Control prenatal',detail:p.risk==='yes'?'Control prenatal · riesgo marcado':'Control prenatal'}));return a.sort((x,y)=>x.date.localeCompare(y.date))}
+function val(id){return $(id).value.trim()}
+function selectPatient(id){['cPatient','prPatient','gPatient','oPatient'].forEach(x=>$(x).value=id);document.querySelector('[data-view="consult"]').click()}
+function removePatient(id){if(!confirm('¿Eliminar este paciente y sus registros asociados?'))return;db.patients=db.patients.filter(p=>p.id!==id);['consults','prenatal','gyne','obst'].forEach(k=>db[k]=db[k].filter(x=>x.patient!==id));save()}
+$('addPatient').onclick=()=>{let name=val('pName');if(!name){alert('Ingrese un nombre ficticio para la prueba.');return}db.patients.push({id:crypto.randomUUID(),name,dob:val('pDob'),phone:val('pPhone'),code:val('pCode'),notes:val('pNotes')});['pName','pDob','pPhone','pCode','pNotes'].forEach(x=>$(x).value='');save()};
+$('clearPatient').onclick=()=>['pName','pDob','pPhone','pCode','pNotes'].forEach(x=>$(x).value='');$('searchPatient').oninput=renderAll;
+$('cDate').value=today();$('prDate').value=today();
+$('saveConsult').onclick=()=>{if(!val('cPatient'))return alert('Seleccione un paciente.');db.consults.push({patient:val('cPatient'),date:val('cDate')||today(),type:val('cType'),bp:val('cBp'),weight:val('cWeight'),dx:val('cDx'),reason:val('cReason'),plan:val('cPlan'),next:val('cNext'),reminder:val('cReminder')});save();alert('Consulta de prueba guardada.');};
+function updatePrenatal(){let fum=val('prFum'),date=val('prUsDate'),w=val('prUsWeeks'),d=val('prUsDays');$('prFppFum').value=fum?addDays(fum,280):'';$('prEgFum').value=fum?gestAge(fum):'';$('prFppUs').value=(date&&w!=='')?fppFromUs(date,w,d):'';let lines=[];if(fum){lines.push('Edad gestacional por FUM: '+gestAge(fum));lines.push('FPP por FUM: '+dateFmt(addDays(fum,280)))}if(date&&w!==''){let total=Number(w)*7+Number(d||0),asOf=diffDays(date,today());lines.push(`Edad gestacional ecográfica al día del estudio: ${w} sem ${Number(d||0)} d`);if(asOf>=0)lines.push(`Edad gestacional ecográfica estimada hoy: ${Math.floor((total+asOf)/7)} sem ${(total+asOf)%7} d`);lines.push('FPP estimada por ecografía: '+dateFmt(fppFromUs(date,w,d)))}$('prenatalCalc').innerHTML=lines.length?lines.map(esc).join('<br>'):'Ingrese FUM o datos ecográficos para ver los cálculos.'}
+['prFum','prUsDate','prUsWeeks','prUsDays'].forEach(id=>$(id).addEventListener('input',updatePrenatal));
+$('savePrenatal').onclick=()=>{if(!val('prPatient'))return alert('Seleccione un paciente.');if(!val('prFum')&&!(val('prUsDate')&&val('prUsWeeks')!==''))return alert('Ingrese FUM o datos de ecografía.');db.prenatal.push({patient:val('prPatient'),date:val('prDate')||today(),fum:val('prFum'),fppFum:val('prFum')?addDays(val('prFum'),280):'',egFum:val('prFum')?gestAge(val('prFum')):'',usDate:val('prUsDate'),usWeeks:val('prUsWeeks'),usDays:val('prUsDays'),fppUs:fppFromUs(val('prUsDate'),val('prUsWeeks'),val('prUsDays')),bp:val('prBp'),weight:val('prWeight'),au:val('prAu'),fcf:val('prFcf'),next:val('prNext'),risk:val('prRisk'),usNotes:val('prUsNotes'),plan:val('prPlan')});save();alert('Control gestacional de prueba guardado. Verifique los cálculos clínicamente.');};
+$('saveGyne').onclick=()=>{if(!val('gPatient'))return alert('Seleccione un paciente.');db.gyne.push({patient:val('gPatient'),menarche:val('gMenarche'),cycle:val('gCycle'),fum:val('gFum'),contraception:val('gContraception'),screening:val('gScreening'),history:val('gHistory'),exam:val('gExam'),plan:val('gPlan')});save();alert('Historia ginecológica de prueba guardada.');};
+$('saveObst').onclick=()=>{if(!val('oPatient'))return alert('Seleccione un paciente.');db.obst.push({patient:val('oPatient'),g:val('oG'),p:val('oP'),c:val('oC'),a:val('oA'),living:val('oLiving'),comp:val('oComp'),history:val('oHistory'),notes:val('oNotes')});save();alert('Historia obstétrica de prueba guardada.');};
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.view').forEach(x=>x.classList.add('hidden'));$(b.dataset.view).classList.remove('hidden');renderAll()});
+$('notifyPermission').onclick=async()=>{if(!('Notification'in window)){$('notifyStatus').textContent='Este navegador no permite notificaciones.';return}let p=await Notification.requestPermission();$('notifyStatus').textContent=p==='granted'?'Permiso concedido. Las notificaciones no se envían si la página está cerrada.':'Permiso no concedido.';if(p==='granted')new Notification('Agenda médica de prueba',{body:'Notificaciones del navegador activadas.'})};
+$('exportJson').onclick=()=>download('respaldo_gineco_demo.json',JSON.stringify(db,null,2),'application/json');
+$('exportCsv').onclick=()=>{let rows=[['Fecha','Paciente','Tipo','Diagnóstico','Motivo','Plan','Próximo control'],...db.consults.map(c=>[c.date,nameOf(c.patient),c.type,c.dx,c.reason,c.plan,c.next])];download('consultas_gineco_demo.csv',rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n'),'text/csv;charset=utf-8')};
+$('deleteAll').onclick=()=>{if(confirm('¿Borrar todos los datos de este navegador? Esta acción no se puede deshacer.')){db={patients:[],consults:[],prenatal:[],gyne:[],obst:[]};save()}};
+function download(name,data,type){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();URL.revokeObjectURL(a.href)}
+renderAll();updatePrenatal();
+</script></body></html>
